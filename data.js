@@ -12,8 +12,8 @@ const ARTWORKS =
         size: "80x80cm",
         medium: "Oil on Canvas",
         images: [
-            "/gallery/featured.jpeg",
-            "/gallery/featured2.jpeg"
+            "gallery/featured.jpeg",
+            "gallery/featured2.jpeg"
         ]
     },
    {
@@ -55,7 +55,7 @@ const ARTWORKS =
         size: "50x70cm",
         medium: "Digital Print",
         images: [
-            "/gallery/print1.jpeg"
+            "gallery/print1.jpeg"
         ]
     },
     {
@@ -68,7 +68,7 @@ const ARTWORKS =
         size: "150x100cm",
         medium: "Mixed Media",
         images: [
-            "/gallery/fabric1.jpeg"
+            "gallery/fabric1.jpeg"
         ]
     },
     {
@@ -81,7 +81,7 @@ const ARTWORKS =
         size: "200x200cm",
         medium: "Oil on Linen",
         images: [
-           "/gallery/paint3.png"
+           "gallery/paint3.png"
             
         ]
     },
@@ -95,7 +95,7 @@ const ARTWORKS =
         size: "60x90cm",
         medium: "Analog Photo",
         images: [
-            "/gallery/print2.jpeg"
+            "gallery/print2.jpeg"
         ]
     }
 ];
