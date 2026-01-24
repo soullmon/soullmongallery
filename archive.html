@@ -1,0 +1,171 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soullmon Gallery | Archive</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-body: #F3F3F3; --bg-card: #FFFFFF; --gradient-harmony: linear-gradient(135deg, #0055FF 0%, #00aaff 40%, #ffaa00 80%, #ff5500 100%); }
+        body { font-family: 'Space Grotesk', sans-serif; background-color: var(--bg-body); -webkit-font-smoothing: antialiased; height: 100vh; overflow: hidden; }
+        .font-mono { font-family: 'Space Mono', monospace; }
+        .bg-gradient-brand { background: var(--gradient-harmony); }
+        .text-gradient { background: var(--gradient-harmony); -webkit-background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
+        .pixel-text { font-weight: 900; letter-spacing: -4px; text-transform: uppercase; }
+        .accordion-content { transition: max-height 0.3s ease-out, opacity 0.3s ease-out; max-height: 0; overflow: hidden; opacity: 0; }
+        .accordion-content.expanded { max-height: 2000px; opacity: 1; }
+        .slide-in-right { transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        .slide-in-right.open { transform: translateX(0); }
+        .art-overlay { background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.1) 100%); }
+        /* Custom Scrollbar */
+        .custom-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
+        .custom-scroll::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+    </style>
+</head>
+<body class="flex flex-col p-2 md:p-6 h-screen w-screen overflow-hidden">
+    <div class="max-w-[1400px] mx-auto w-full bg-white border border-gray-300 rounded-2xl md:rounded-3xl shadow-2xl relative flex flex-col h-full overflow-hidden">
+        <!-- Header -->
+    <!-- Header (Fixed) -->
+       <header class="relative grid grid-cols-12 border-b border-gray-200 h-14 divide-x divide-gray-200 bg-white z-30 flex-shrink-0">
+            <div class="col-span-4 md:col-span-3 flex items-center px-6">
+                <a href="index.html" class="font-bold text-xl tracking-tighter flex items-center gap-2">
+                    <div class="w-6 h-6 bg-gradient-brand rounded-sm"></div>
+                    soullmon
+                </a>
+            </div>
+            <div class="col-span-8 md:col-span-9 flex items-center justify-between px-6 bg-gray-50/50">
+                <nav id="mainNav" class="hidden md:flex gap-8 text-xs font-mono uppercase tracking-wide text-gray-500">
+                    <a href="index.html" class="text-black font-bold nav-link">Gallery</a>
+                    <a href="archive.html" class="hover:text-black transition-colors nav-link">Collection</a>
+                    <a href="artists.html" class="hover:text-black transition-colors nav-link">Artists</a>
+                </nav>
+               
+             <div class="flex items-center gap-4 ml-auto">
+                         <!-- Hamburger Menu (Mobile Only) -->
+                     <button id="mobileMenuBtn" class="md:hidden flex flex-col gap-1 relative group">
+                         <span class="w-6 h-[2px] bg-black"></span>
+                         <span class="w-6 h-[2px] bg-black"></span>
+                         <span class="w-6 h-[2px] bg-black"></span>
+                     </button>
+                    <button onclick="toggleCart()" class="relative group">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                        <span id="cart-badge" class="absolute -top-2 -right-2 bg-gradient-brand text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center opacity-0 transition-opacity duration-300">0</span>
+                    </button>
+                    <button class="hidden md:block bg-gradient-brand text-white px-6 py-2 rounded-sm text-xs font-bold uppercase tracking-wider hover:opacity-90 transition-opacity">Contact Us</button>
+                </div>
+            </div>
+        </header>
+
+
+        <!-- Archive Content -->
+        <div class="flex-1 overflow-y-auto custom-scroll p-6 md:p-12 lg:p-16">
+            <div class="max-w-6xl mx-auto">
+                <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+                    <div>
+                        <h1 class="pixel-text text-2xl md:text-6xl leading-none mb-2 text-gradient">ARCHIVE</h1>
+                        <p class="font-mono text-gray-500 uppercase tracking-widest text-sm">Select a year to explore</p>
+                    </div>
+                </div>
+                <div id="collection-content" class="space-y-1"></div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="grid grid-cols-1 md:grid-cols-12 border-t border-gray-200 bg-gray-100 flex-shrink-0 z-30">
+            <div class="md:col-span-12 p-6 flex flex-col justify-center items-center">
+                <p class="text-xs font-mono text-gray-400">© 2026 Soullmon Gallery</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- CART DRAWER -->
+    <div id="cart-drawer" class="fixed inset-0 z-[60] slide-in-right pointer-events-none">
+        <div id="cart-backdrop" class="absolute inset-0 bg-black/50 backdrop-blur-sm opacity-0 transition-opacity pointer-events-none" onclick="toggleCart()"></div>
+        <div class="absolute right-0 top-0 h-full w-full md:w-[450px] bg-white border-l border-gray-200 shadow-2xl pointer-events-auto flex flex-col">
+            <div class="h-16 border-b border-gray-200 flex items-center justify-between px-6 bg-gray-50">
+                <div class="font-mono font-bold uppercase text-sm flex items-center gap-2">Cart <span id="cart-count-header" class="bg-black text-white px-2 py-0.5 rounded-full text-xs">0</span></div>
+                <button onclick="toggleCart()" class="text-gray-400 hover:text-black"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+            </div>
+            <div id="cart-items-container" class="flex-1 overflow-y-auto p-6 space-y-4"></div>
+            <div class="border-t border-gray-200 p-6 bg-gray-50">
+                <div class="flex justify-between items-center mb-6"><span class="text-sm font-bold uppercase">Subtotal</span><span id="cart-total" class="text-xl font-bold font-mono">$0.00</span></div>
+                <button class="w-full bg-black text-white h-12 rounded-sm text-xs font-bold uppercase tracking-widest hover:bg-gradient-brand transition-all">Proceed to Checkout</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="data.js"></script>
+    <script>
+     const mobileBtn = document.getElementById('mobileMenuBtn');
+ const mainNav = document.getElementById('mainNav');
+ 
+ if (mobileBtn && mainNav) {
+     mobileBtn.addEventListener('click', () => {
+         mainNav.classList.toggle('hidden');
+         mainNav.classList.toggle('flex');
+         mainNav.classList.toggle('flex-col');
+         mainNav.classList.toggle('absolute');
+         mainNav.classList.toggle('top-16');
+         mainNav.classList.toggle('right-4');
+         mainNav.classList.toggle('bg-white');
+         mainNav.classList.toggle('p-6');
+         mainNav.classList.toggle('rounded-xl');
+         mainNav.classList.toggle('shadow-xl');
+         mainNav.classList.toggle('z-50');
+     });
+ }
+        function renderCollection() {
+            const sorted = [...ARTWORKS].sort((a,b) => b.year - a.year);
+            const years = [...new Set(sorted.map(a => a.year))];
+            const html = years.map((year, index) => {
+                const items = sorted.filter(a => a.year === year);
+                const isFirst = index === 0;
+                return `
+                    <div class="border-b border-gray-200">
+                        <button onclick="toggleYear('${year}')" class="w-full flex items-center justify-between py-6 hover:bg-gray-50 transition-colors text-left group">
+                            <div class="flex items-center gap-4">
+                                <span class="text-4xl md:text-5xl font-black tracking-tighter group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-brand transition-all duration-300">${year}</span>
+                                <span class="text-[10px] font-mono text-gray-400 uppercase tracking-widest border border-gray-200 px-2 py-1 rounded-full">${items.length} Items</span>
+                            </div>
+                            <span id="icon-${year}" class="text-2xl font-light text-gray-300 group-hover:text-blue-500 transition-colors">${isFirst ? '−' : '+'}</span>
+                        </button>
+                        <div id="content-${year}" class="accordion-content ${isFirst ? 'expanded' : ''} bg-gray-50/10">
+                            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-1 pb-8 pt-1">
+                            ${items.map(item => `
+                                <div onclick="addToCart(ARTWORKS.find(a => a.id === ${item.id}))" class="relative group h-48 md:h-64 overflow-hidden cursor-pointer">
+                                    <img src="${item.images[0]}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0">
+                                    <div class="absolute inset-0 art-overlay opacity-80 group-hover:opacity-60 transition-opacity"></div>
+                                    <div class="absolute inset-0 p-4 flex flex-col justify-end text-white">
+                                        <h4 class="font-bold uppercase text-lg leading-none mb-1 translate-y-2 group-hover:translate-y-0 transition-transform">${item.title}</h4>
+                                        <div class="flex justify-between items-center text-[10px] font-mono opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <span>${item.medium}</span>
+                                            <span class="font-bold text-blue-300">$${item.price.toLocaleString()}</span>
+                                        </div>
+                                    </div>
+                                    <div class="absolute top-2 right-2 bg-white text-black rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg scale-75">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                    </div>
+                                </div>
+                            `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            document.getElementById('collection-content').innerHTML = html;
+        }
+
+        window.toggleYear = (year) => {
+            const content = document.getElementById(`content-${year}`);
+            const icon = document.getElementById(`icon-${year}`);
+            if (content.classList.contains('expanded')) { content.classList.remove('expanded'); icon.innerHTML = '+'; } 
+            else { content.classList.add('expanded'); icon.innerHTML = '−'; }
+        }
+        renderCollection();
+    </script>
+</body>
+</html>

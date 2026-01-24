@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soullmon Gallery | Fine Art</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" type="text/css" href="wm.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-body: #F3F3F3;
+            --bg-card: #FFFFFF;
+            --border-color: #E5E7EB;
+            --text-main: #111111;
+            --text-muted: #6B7280;
+            --gradient-harmony: linear-gradient(135deg, #0055FF 0%, #00aaff 40%, #ffaa00 80%, #ff5500 100%);
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            -webkit-font-smoothing: antialiased;
+            /* Prevent body scroll, layout handles it */
+            height: 100vh;
+            overflow: hidden; 
+        }
+  
+        .font-mono { font-family: 'Space Mono', monospace; }
+        .bg-gradient-brand { background: var(--gradient-harmony); }
+        .text-gradient { background: var(--gradient-harmony); -webkit-background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
+        .hover-gradient-text:hover { background: var(--gradient-harmony); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        .grid-lines { display: grid; gap: 1px; background-color: #E5E7EB; border: 1px solid #E5E7EB; }
+        .grid-cell { background-color: var(--bg-card); }
+
+        /* Custom Scrollbar for the Content Area */
+        .custom-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
+        .custom-scroll::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+
+        .pixel-text { font-weight: 900; letter-spacing: -4px; text-transform: uppercase; }
+        .art-overlay { background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.1) 100%); }
+
+        .slide-in-right { transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        .slide-in-right.open { transform: translateX(0); }
+        
+        .fade-modal { opacity: 0; pointer-events: none; transition: opacity 0.2s ease-in-out; }
+        .fade-modal.open { opacity: 1; pointer-events: auto; }
+    </style>
+</head>
+<body class="flex flex-col p-2 md:p-6 h-screen w-screen overflow-hidden">
+
+    <!-- Main Container Frame (Fixed Height) -->
+    <div class="max-w-[1400px] mx-auto w-full bg-white border border-gray-300 rounded-2xl md:rounded-3xl shadow-2xl relative flex flex-col h-full overflow-hidden">
+        
+        <!-- Header (Fixed) -->
+       <header class="relative grid grid-cols-12 border-b border-gray-200 h-14 divide-x divide-gray-200 bg-white z-30 flex-shrink-0">
+            <div class="col-span-4 md:col-span-3 flex items-center px-6">
+                <a href="index.html" class="font-bold text-xl tracking-tighter flex items-center gap-2">
+                    <div class="w-6 h-6 bg-gradient-brand rounded-sm"></div>
+                    soullmon
+                </a>
+            </div>
+            <div class="col-span-8 md:col-span-9 flex items-center justify-between px-6 bg-gray-50/50">
+                <nav id="mainNav" class="hidden md:flex gap-8 text-xs font-mono uppercase tracking-wide text-gray-500">
+                    <a href="index.html" class="text-black font-bold nav-link">Gallery</a>
+                    <a href="archive.html" class="hover:text-black transition-colors nav-link">Collection</a>
+                    <a href="artists.html" class="hover:text-black transition-colors nav-link">Artists</a>
+                </nav>
+               
+             <div class="flex items-center gap-4 ml-auto">
+                         <!-- Hamburger Menu (Mobile Only) -->
+                     <button id="mobileMenuBtn" class="md:hidden flex flex-col gap-1 relative group">
+                         <span class="w-6 h-[2px] bg-black"></span>
+                         <span class="w-6 h-[2px] bg-black"></span>
+                         <span class="w-6 h-[2px] bg-black"></span>
+                     </button>
+                    <button onclick="toggleCart(0)" class="relative group">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                        <span id="cart-badge" class="absolute -top-2 -right-2 bg-gradient-brand text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center opacity-0 transition-opacity duration-300">0</span>
+                    </button>
+                    <button class="hidden md:block bg-gradient-brand text-white px-6 py-2 rounded-sm text-xs font-bold uppercase tracking-wider hover:opacity-90 transition-opacity">Contact Us</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Scrollable Content Area -->
+        <div class="flex-1 overflow-y-auto custom-scroll relative bg-gray-50/10">
+            <!-- VIEW: HOME -->
+            <div id="view-home" class="view-visible">
+                <!-- Hero Title -->
+                <div class="border-b border-gray-200 bg-gray-50/30 p-12 md:p-16 flex justify-center items-center">
+                    <h2 class="pixel-text text-5xl md:text-6xl lg:text-8xl tracking-tighter text-center">
+                        Soullmon<span class="text-gray-300"></span>gallery
+                    </h2>
+                </div>
+
+                <!-- Featured Project -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 border-b border-gray-200 divide-y lg:divide-y-0 lg:divide-x divide-gray-200">
+                    <div class="lg:col-span-4 p-8 flex flex-col justify-between bg-gray-50/20">
+                        <div class="flex items-start gap-2 mb-6">
+                            <div class="w-2 h-2 bg-black mt-1.5 rounded-full"></div>
+                            <p class="text-sm text-gray-600 leading-relaxed font-mono">
+                                Discover exclusive<br>masterpieces and fine art collections.
+                            </p>
+                        </div>
+                        <div class="mt-auto">
+                            <span class="text-xs font-bold uppercase tracking-widest text-gray-400">Featured Work</span>
+                            <h2 class="text-4xl font-bold mt-2 text-gradient">01</h2>
+                        </div>
+                    </div>
+                    <div onclick="openDetail(0)" class="lg:col-span-8 relative group cursor-pointer overflow-hidden h-[400px] lg:h-auto">
+                        <img src="gallery/featured.jpeg" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Featured Art">
+                        <div class="absolute inset-0 art-overlay"></div>
+                        <div class="absolute top-0 left-0 z-10">
+                            <span class="bg-gradient-brand text-white px-3 py-1 text-[10px] font-bold uppercase tracking-wider inline-block">Featured</span>
+                        </div>
+                        <div class="absolute inset-0 p-10 flex flex-col justify-end text-white z-10">
+                            <div class="flex flex-col md:flex-row items-end md:items-center justify-between gap-6 border-b border-white/30 pb-6 mb-6">
+                                <div>
+                                    <h3 class="text-4xl font-bold mb-2">Bonfire Fade Out</h3>
+                                    <p class="text-xs text-gray-300 max-w-md font-mono leading-relaxed">An Painting exploration of infinite possibilities.</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-[10px] font-mono uppercase text-gray-400"></p>
+                                    <p class="text-3xl font-bold text-white"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filter Bar -->
+                <div class="grid grid-cols-1 md:grid-cols-12 border-b border-gray-200 divide-y md:divide-y-0 md:divide-x divide-gray-200 bg-gray-100 sticky top-0 z-20">
+                    <div class="md:col-span-8 flex overflow-x-auto no-scrollbar">
+                        <button onclick="filterType('All')" class="px-6 py-4 text-xs font-bold uppercase hover:bg-white transition-colors bg-black text-white whitespace-nowrap">All Works</button>
+                        <button onclick="filterType('Painting')" class="px-6 py-4 text-xs font-bold uppercase hover:bg-white hover-gradient-text transition-colors text-gray-500 whitespace-nowrap">Painting</button>
+                        <button onclick="filterType('Fabric')" class="px-6 py-4 text-xs font-bold uppercase hover:bg-white hover-gradient-text transition-colors text-gray-500 whitespace-nowrap">Fabric</button>
+                        <button onclick="filterType('Sculpt')" class="px-6 py-4 text-xs font-bold uppercase hover:bg-white hover-gradient-text transition-colors text-gray-500 whitespace-nowrap">Toys</button>
+                         <button onclick="filterType('Prints')" class="px-6 py-4 text-xs font-bold uppercase hover:bg-white hover-gradient-text transition-colors text-gray-500 whitespace-nowrap">Prints</button>
+                    </div>
+                    <div class="md:col-span-4 flex items-center px-4 bg-white/50">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-gray-400 mr-3"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        <input type="text" placeholder="SEARCH ARTWORKS" class="bg-transparent text-xs font-mono w-full outline-none py-4 uppercase placeholder-gray-400">
+                    </div>
+                </div>
+
+                <!-- Grid Container -->
+                <main id="portfolio-grid" class="grid-lines bg-gray-200">
+                    <!-- Items injected by JS -->
+                </main>
+            </div>
+        </div>
+
+        <!-- Footer (Fixed) -->
+        <div class="grid grid-cols-1 md:grid-cols-12 border-t border-gray-200 bg-gray-100 flex-shrink-0 z-30">
+            <div class="md:col-span-5 p-8 border-r border-gray-200 flex flex-col justify-between">
+                <div class="mb-4">
+                    <h4 class="text-2xl font-bold mb-1">Join the Movement</h4>
+                    <p class="text-gray-500 text-xs">Be the first to know about new drops.</p>
+                </div>
+                <div class="flex gap-4">
+                    <a href="#" class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gradient-brand hover:border-transparent hover:text-white transition-all"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path></svg></a>
+                    <a href="#" class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gradient-brand hover:border-transparent hover:text-white transition-all"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg></a>
+                </div>
+            </div>
+            <div class="md:col-span-7 p-8 flex flex-col justify-center items-center bg-white relative overflow-hidden group">
+                <div class="absolute inset-0 bg-gradient-brand opacity-0 group-hover:opacity-10 transition-opacity duration-500"></div>
+                <div class="flex flex-col md:flex-row gap-4 w-full max-w-md relative z-10">
+                    <button class="flex-1 bg-black text-white h-10 rounded-sm text-xs font-bold uppercase tracking-widest hover:bg-gradient-brand transition-all shadow-xl"><Sub></Sub>Portfolio</button>
+                    <button class="flex-1 border border-gray-300 bg-white text-black h-10 rounded-sm text-xs font-bold uppercase tracking-widest hover:border-blue-500 hover:text-blue-600 transition-colors">Member Access</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FULL DETAIL MODAL -->
+    <div id="detail-modal" class="fixed inset-0 z-50 flex items-center justify-center fade-modal">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeDetail()"></div>
+        <div class="bg-white w-full max-w-5xl h-[90vh] md:h-[85vh] relative z-10 grid grid-cols-1 md:grid-cols-2 shadow-2xl overflow-y-auto md:overflow-hidden m-4 rounded-sm">
+            <button onclick="closeDetail()" class="absolute top-4 right-4 z-20 bg-white/20 backdrop-blur hover:bg-white p-2 rounded-full text-white hover:text-black transition-colors"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+            <div class="relative bg-gray-100 flex flex-col h-[50vh] md:h-full">
+                <div class="flex-1 relative overflow-hidden">
+                    <img id="modal-img" src="" class="absolute inset-0 w-full h-full object-cover transition-all duration-300" />
+                    <div class="absolute bottom-0 left-0 p-6 bg-gradient-to-t from-black/60 to-transparent w-full pointer-events-none"><span id="modal-cat" class="text-xs font-bold uppercase tracking-wider text-white border border-white/50 px-2 py-1 inline-block mb-2">Category</span></div>
+                </div>
+                <div id="modal-thumbnails" class="h-24 bg-white border-t border-gray-200 p-4 flex gap-3 overflow-x-auto"></div>
+            </div>
+            <div class="p-8 md:p-12 flex flex-col bg-white overflow-y-auto">
+                <div class="border-b border-gray-100 pb-6 mb-6">
+                    <h2 id="modal-title" class="text-4xl md:text-5xl font-black uppercase tracking-tight mb-2 leading-none text-gradient">Title</h2>
+                    <p id="modal-artist" class="text-lg font-mono text-gray-500 uppercase tracking-wide">Artist Name</p>
+                </div>
+                <div class="grid grid-cols-2 gap-6 mb-8 text-sm">
+                    <div><span class="block text-gray-400 text-xs uppercase font-bold mb-1">Year</span><span id="modal-year" class="font-bold">2023</span></div>
+                    <div><span class="block text-gray-400 text-xs uppercase font-bold mb-1">Medium</span><span id="modal-medium" class="font-bold">Oil</span></div>
+                    <div><span class="block text-gray-400 text-xs uppercase font-bold mb-1">Dimensions</span><span id="modal-size" class="font-bold">100x100</span></div>
+                     <div><span class="block text-gray-400 text-xs uppercase font-bold mb-1">Authenticity</span><span class="font-bold text-green-600 flex items-center gap-1">Verified</span></div>
+                </div>
+                <div id="detail-action" class="mt-auto pt-6 border-t border-gray-100">
+                    <div class="flex justify-between items-end mb-6"><span class="text-xs font-bold uppercase tracking-widest text-gray-400">Total Price</span><span id="modal-price" class="text-4xl font-bold text-black tracking-tight">$0</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- QUICK VIEW MODAL -->
+    <div id="quick-view-modal" class="fixed inset-0 z-50 flex items-center justify-center fade-modal">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeQuickView()"></div>
+        <div class="bg-white w-full max-w-xl relative z-10 flex flex-col md:flex-row shadow-2xl overflow-hidden m-4 rounded-sm">
+            <button onclick="closeQuickView()" class="absolute top-2 right-2 z-20 bg-black/10 hover:bg-black hover:text-white p-1 rounded-full transition-colors"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+            <div class="w-full md:w-1/2 h-64 md:h-auto bg-gray-100"><img id="qv-img" src="" class="w-full h-full object-cover"></div>
+            <div class="w-full md:w-1/2 p-6 flex flex-col justify-between">
+                <div>
+                    <h3 id="qv-title" class="text-2xl font-black uppercase tracking-tight mb-1 text-gradient">Title</h3>
+                    <p id="qv-artist" class="text-xs font-mono text-gray-500 uppercase mb-4">Artist</p>
+                    <p id="qv-price" class="text-xl font-bold text-black mb-4">$0</p>
+                    <div id="qv-status" class="flex items-center gap-2 mb-4 min-h-[20px]><span class="w-2 h-2 rounded-full bg-green-500"></span><span class="text-xs text-gray-500 uppercase">In Stock</span></div>
+                </div>
+                <div id="qv-action" class="space-y-2 min-h-[96px]">
+                 <button onclick="addToCart(quickViewItem); closeQuickView();" class="w-full bg-black text-white py-3 text-xs font-bold uppercase tracking-widest hover:bg-gradient-brand transition-all">Add to Cart</button>
+                    <button onclick="openFullFromQuickView()" class="w-full border border-gray-200 text-gray-500 py-3 text-xs font-bold uppercase tracking-widest hover:text-black hover:border-black transition-colors">View Full Details</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CART DRAWER -->
+    <div id="cart-drawer" class="fixed inset-0 z-[60] slide-in-right pointer-events-none">
+        <div id="cart-backdrop" class="absolute inset-0 bg-black/50 backdrop-blur-sm opacity-0 transition-opacity pointer-events-none" onclick="toggleCart()"></div>
+        <div class="absolute right-0 top-0 h-full w-full md:w-[450px] bg-white border-l border-gray-200 shadow-2xl pointer-events-auto flex flex-col">
+            <div class="h-16 border-b border-gray-200 flex items-center justify-between px-6 bg-gray-50">
+                <div class="font-mono font-bold uppercase text-sm flex items-center gap-2">Cart <span id="cart-count-header" class="bg-black text-white px-2 py-0.5 rounded-full text-xs">0</span></div>
+                <button onclick="toggleCart()" class="text-gray-400 hover:text-black"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+            </div>
+            <div id="cart-items-container" class="flex-1 overflow-y-auto p-6 space-y-4"></div>
+            <div class="border-t border-gray-200 p-6 bg-gray-50">
+                <div class="flex justify-between items-center mb-6"><span class="text-sm font-bold uppercase">Subtotal</span><span id="cart-total" class="text-xl font-bold font-mono">$0.00</span></div>
+                <button onclick="checkout()" class="w-full bg-black text-white h-12 rounded-sm text-xs font-bold uppercase tracking-widest hover:bg-gradient-brand transition-all">Proceed to Checkout</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="data.js"></script>
+
+    <script>
+    
+         const mobileBtn = document.getElementById('mobileMenuBtn');
+ const mainNav = document.getElementById('mainNav');
+ 
+ if (mobileBtn && mainNav) {
+     mobileBtn.addEventListener('click', () => {
+         mainNav.classList.toggle('hidden');
+         mainNav.classList.toggle('flex');
+         mainNav.classList.toggle('flex-col');
+         mainNav.classList.toggle('absolute');
+         mainNav.classList.toggle('top-16');
+         mainNav.classList.toggle('right-4');
+         mainNav.classList.toggle('bg-white');
+         mainNav.classList.toggle('p-6');
+         mainNav.classList.toggle('rounded-xl');
+         mainNav.classList.toggle('shadow-xl');
+         mainNav.classList.toggle('z-50');
+     });
+ }    
+        // --- PAGE SPECIFIC LOGIC ---
+        let currentDetailItem = null;
+        let quickViewItem = null;
+        const gridEl = document.getElementById('portfolio-grid');
+
+        function renderGrid(filter = 'All') {
+            const filtered = (filter === 'All'? ARTWORKS
+            : ARTWORKS.filter(a => a.category === filter)
+            ).filter(a => a.id !== 0);
+            gridEl.className = "grid-lines bg-gray-200 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3";
+            gridEl.innerHTML = filtered.map(art => `
+                <div onclick="openDetail(${art.id})" class="grid-cell relative group h-[400px] overflow-hidden cursor-pointer">
+    ${art.sold ? `
+    <div class="sold-watermark">
+        <span>SOLD</span>
+    </div>
+    ` : ``}
+                    <img src="${art.images[0]}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0" alt="${art.title}">
+                    <div class="absolute inset-0 art-overlay opacity-90 group-hover:opacity-80 transition-opacity"></div>
+                    <div class="absolute top-4 right-4 z-20 opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0 duration-300">
+                        <button onclick="event.stopPropagation(); openQuickView(${art.id})" class="bg-white text-black p-3 rounded-full hover:bg-gradient-brand hover:text-white transition-all shadow-lg"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+                    </div>
+                    <div class="relative z-10 p-8 flex flex-col justify-between h-full text-white">
+                        <div class="flex justify-between items-start"><span class="border border-white/20 backdrop-blur-sm text-[10px] font-bold uppercase tracking-wider px-2 py-1 bg-black/30">${art.category}</span></div>
+                        <div class="mt-auto mb-6 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300"><h3 class="text-2xl font-bold uppercase tracking-tight mb-1">${art.title}</h3><p class="text-xs font-mono text-gray-300 uppercase">By ${art.artist}</p></div>
+                        <div class="grid grid-cols-2 gap-y-4 border-t border-white/20 pt-4"><div><div class="text-sm font-bold text-white group-hover:text-blue-300 transition-colors">$${art.price.toLocaleString()}</div><div class="text-[9px] text-gray-400 uppercase font-mono">Price</div></div><div class="text-right"><div class="text-sm font-bold">${art.year}</div><div class="text-[9px] text-gray-400 uppercase font-mono">Year</div></div></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.filterType = (type) => {
+            document.querySelectorAll('button[onclick^="filterType"]').forEach(btn => {
+                if(btn.textContent === type || (type === 'All' && btn.textContent === 'All Works')) {
+                    btn.classList.remove('text-gray-500', 'bg-white'); btn.classList.add('bg-black', 'text-white');
+                } else {
+                    btn.classList.add('text-gray-500'); btn.classList.remove('bg-black', 'text-white');
+                }
+            });
+            renderGrid(type);
+        }
+
+        const modal = document.getElementById('detail-modal');
+        const mainModalImg = document.getElementById('modal-img');
+        
+        window.openDetail = (id) => {
+            currentDetailItem = ARTWORKS.find(a => a.id === id);
+            
+            if(!currentDetailItem) return;
+            mainModalImg.src = currentDetailItem.images[0];
+         
+            if (currentDetailItem.sold) {
+    actionArea.innerHTML = `
+        <div class="bg-gray-50 border border-gray-200 p-6">
+            <span class="text-xs font-bold uppercase tracking-widest text-gray-400">Collected By</span>
+            <div class="text-2xl font-bold text-black mt-2">
+                ${currentDetailItem.collector?.name || 'Private Collector'}
+            </div>
+            <div class="text-sm font-mono uppercase text-gray-500 mt-1">
+                ${currentDetailItem.collector?.location || ''}
+            </div>
+            <div class="text-xs text-gray-400 mt-3">
+                ${currentDetailItem.collector?.note || ''}
+            </div>
+        </div>
+    `;
+} else {
+    actionArea.innerHTML = `
+        <div class="flex justify-between items-end mb-6">
+            <span class="text-xs font-bold uppercase tracking-widest text-gray-400">Total Price</span>
+            <span id="modal-price" class="text-4xl font-bold text-black tracking-tight">
+                $${currentDetailItem.price.toLocaleString()}
+            </span>
+        </div>
+        <button onclick="addToCart(currentDetailItem); closeDetail();" 
+            class="w-full bg-gradient-brand text-white h-14 rounded-sm text-sm font-bold uppercase tracking-[0.2em]">
+            Add to Cart
+        </button>
+    `;
+}
+
+            document.getElementById('modal-cat').textContent = currentDetailItem.category;
+            document.getElementById('modal-title').textContent = currentDetailItem.title;
+            document.getElementById('modal-artist').textContent = currentDetailItem.artist;
+            document.getElementById('modal-year').textContent = currentDetailItem.year;
+            document.getElementById('modal-medium').textContent = currentDetailItem.medium;
+            document.getElementById('modal-size').textContent = currentDetailItem.size;
+            document.getElementById('modal-price').textContent = '$' + currentDetailItem.price.toLocaleString();
+            document.getElementById('modal-thumbnails').innerHTML = currentDetailItem.images.map((img, idx) => `
+                <img src="${img}" onclick="setMainImage('${img}', this)" class="h-full w-auto object-cover cursor-pointer opacity-70 hover:opacity-100 transition-opacity border-2 ${idx === 0 ? 'border-black' : 'border-transparent'}">
+            `).join('');
+            modal.classList.add('open');
+        }
+        
+        window.setMainImage = (src, thumbEl) => {
+            mainModalImg.src = src;
+            for(let t of document.getElementById('modal-thumbnails').children) { t.classList.remove('border-black'); t.classList.add('border-transparent'); }
+            thumbEl.classList.remove('border-transparent'); thumbEl.classList.add('border-black');
+        }
+
+        window.closeDetail = () => { modal.classList.remove('open'); }
+        const qvModal = document.getElementById('quick-view-modal');
+        window.openQuickView = (id) => {
+            quickViewItem = ARTWORKS.find(a => a.id === id);
+            if(!quickViewItem) return;
+            document.getElementById('qv-img').src = quickViewItem.images[0];
+            document.getElementById('qv-title').textContent = quickViewItem.title;
+            document.getElementById('qv-artist').textContent = quickViewItem.artist;
+            document.getElementById('qv-price').textContent = '$' + quickViewItem.price.toLocaleString();
+            const statusEl = document.getElementById('qv-status');
+const actionEl = document.getElementById('qv-action');
+
+if (quickViewItem.sold) {
+    statusEl.innerHTML = `
+        <span class="w-2 h-2 rounded-full bg-red-500"></span>
+        <span class="text-xs text-gray-500 uppercase">
+            Sold by: ${quickViewItem.soldBy || 'Private Collector'}
+        </span>
+        <span class="text-xs text-gray-500 uppercase text-blue-500">
+            <a href="${currentDetailItem.soldBy?.link || '#'}"
+               target="_blank"
+               class="underline">
+               ${currentDetailItem.soldBy?.name || 'link'}
+            </a>
+        </span>
+    `;
+
+    actionEl.innerHTML = `
+        <div class="text-xs font-mono uppercase text-gray-400 pt-6">
+            This artwork has been collected
+        </div>
+    `;
+} else {
+    statusEl.innerHTML = `
+        <span class="w-2 h-2 rounded-full bg-green-500"></span>
+        <span class="text-xs text-gray-500 uppercase">
+            Available
+        </span>
+    `;
+
+    actionEl.innerHTML = `
+        <button onclick="addToCart(quickViewItem); closeQuickView();"
+            class="w-full bg-black text-white py-3 text-xs font-bold uppercase tracking-widest hover:bg-gradient-brand transition-all">
+            Add to Cart
+        </button>
+        <button onclick="openFullFromQuickView()"
+            class="w-full border border-gray-200 text-gray-500 py-3 text-xs font-bold uppercase tracking-widest hover:text-black hover:border-black transition-colors">
+            View Full Details
+        </button>
+    `;
+}
+            qvModal.classList.add('open');
+        }
+        window.closeQuickView = () => { qvModal.classList.remove('open'); quickViewItem = null; }
+        window.openFullFromQuickView = () => { if(!quickViewItem) return; const id = quickViewItem.id; closeQuickView(); openDetail(id); }
+        window.checkout = () => { if(cart.length === 0) return; alert(`Proceeding to checkout with ${cart.length} items. Total: $${cart.reduce((sum, item) => sum + item.price, 0).toLocaleString()}`); }
+        
+        renderGrid();
+    </script>
+</body>
+</html>
