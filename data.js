@@ -29,7 +29,7 @@ const ARTWORKS =
     soldBy:"Mike",
     link: "https://instagram.com/mikecollector",
     images: [
-        "/gallery/paint1.jpeg"
+        "gallery/paint1.jpeg"
     ]
 },
     {
@@ -42,7 +42,7 @@ const ARTWORKS =
         size: "100x120cm",
         medium: "Acrylic",
         images: [
-            "/gallery/sculpt1.jpeg"
+            "gallery/sculpt1.jpeg"
         ]
     },
     {
